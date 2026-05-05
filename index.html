@@ -165,6 +165,33 @@ html,body{height:100%;background:var(--bg);color:var(--txt);
 .pi-txt{font-size:13px;color:var(--txt);flex:1}
 .pack-note{text-align:center;padding:14px 16px;font-size:12px;color:var(--txt3);line-height:1.6}
 
+/* ── Phrases tab ── */
+#scn-bar{flex-shrink:0;background:var(--card);border-bottom:1px solid var(--bdr);
+  display:flex;gap:7px;padding:9px 12px;overflow-x:auto;scrollbar-width:none}
+#scn-bar::-webkit-scrollbar{display:none}
+.sp{flex-shrink:0;padding:6px 12px;border-radius:20px;border:1.5px solid var(--bdr);
+  cursor:pointer;transition:all .18s;background:var(--bg);
+  font-size:12px;font-weight:600;color:var(--txt2);white-space:nowrap}
+.sp.on{background:var(--pri);border-color:var(--pri);color:#fff}
+#phrase-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px}
+.ph-card{background:var(--card);border-radius:12px;padding:14px 14px 12px;
+  margin-bottom:10px;box-shadow:var(--shd);display:flex;align-items:flex-start;gap:10px}
+.ph-txt{flex:1;min-width:0}
+.ph-jp{font-size:17px;font-weight:700;color:var(--pri);line-height:1.4;margin-bottom:4px}
+.ph-zh{font-size:13px;color:var(--txt);margin-bottom:3px}
+.ph-rm{font-size:11px;color:var(--txt3);font-style:italic}
+.ph-voice{flex-shrink:0;width:40px;height:40px;border-radius:50%;
+  background:var(--pri);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;transition:all .15s;box-shadow:0 2px 8px rgba(193,127,74,.3)}
+.ph-voice:active{transform:scale(.92);background:var(--pri-lt)}
+.ph-voice.speaking{background:var(--grn);animation:pulse .7s infinite alternate}
+@keyframes pulse{from{box-shadow:0 2px 8px rgba(107,158,120,.3)}to{box-shadow:0 2px 16px rgba(107,158,120,.6)}}
+.ph-tip{text-align:center;padding:10px 0 20px;font-size:12px;color:var(--txt3);line-height:1.6}
+.no-tts{display:none;margin:12px 16px;padding:10px 12px;background:var(--red-lt);
+  border-left:3px solid var(--red);border-radius:0 8px 8px 0;
+  font-size:12px;color:var(--red)}
+
 /* ── Bottom nav ── */
 #nav{flex-shrink:0;height:var(--nav);background:var(--card);
   display:flex;border-top:1px solid var(--bdr)}
@@ -206,6 +233,13 @@ html,body{height:100%;background:var(--bg);color:var(--txt);
   <!-- 行李 -->
   <div id="t-pack" class="tab scroll-tab"></div>
 
+  <!-- 對話 -->
+  <div id="t-phrase" class="tab">
+    <div id="scn-bar"></div>
+    <div class="no-tts" id="tts-warn">此瀏覽器不支援語音功能</div>
+    <div id="phrase-scroll"></div>
+  </div>
+
 </main>
 
 <nav id="nav">
@@ -213,6 +247,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);
   <button class="nb" id="nb-trans" onclick="sw('trans')"><span class="nb-ico">🚌</span><span class="nb-lbl">交通</span></button>
   <button class="nb" id="nb-hotel" onclick="sw('hotel')"><span class="nb-ico">🏨</span><span class="nb-lbl">住宿</span></button>
   <button class="nb" id="nb-pack" onclick="sw('pack')"><span class="nb-ico">🧳</span><span class="nb-lbl">行李</span></button>
+  <button class="nb" id="nb-phrase" onclick="sw('phrase')"><span class="nb-ico">🗣️</span><span class="nb-lbl">對話</span></button>
 </nav>
 
 </div>
@@ -407,10 +442,86 @@ const PACK={
   ],
 };
 
+// ── 對話短句資料 ──
+const SCENARIOS=[
+  {id:"rest",icon:"🍽️",name:"餐廳",phrases:[
+    {jp:"これをください。",zh:"我要這個。",rm:"Kore o kudasai."},
+    {jp:"おすすめは何ですか？",zh:"有什麼推薦嗎？",rm:"Osusume wa nan desu ka?"},
+    {jp:"辛くないものをお願いします。",zh:"請給我不辣的。",rm:"Karakunai mono o onegai shimasu."},
+    {jp:"温かいものをください。",zh:"請給我熱的。",rm:"Atatakai mono o kudasai."},
+    {jp:"メニューをください。",zh:"請給我菜單。",rm:"Menyū o kudasai."},
+    {jp:"お会計をお願いします。",zh:"請結帳。",rm:"Okaikei o onegai shimasu."},
+    {jp:"領収書をください。",zh:"請給我收據。",rm:"Ryōshūsho o kudasai."},
+    {jp:"アレルギーがあります。",zh:"我有過敏。",rm:"Arerugī ga arimasu."},
+    {jp:"おいしいです！",zh:"很好吃！",rm:"Oishii desu!"},
+  ]},
+  {id:"taxi",icon:"🚕",name:"計程車",phrases:[
+    {jp:"AMANEK Beppu YULA-REまでお願いします。",zh:"請載我去 AMANEK Beppu 飯店。",rm:"AMANEK Beppu YULA-RE made onegai shimasu."},
+    {jp:"BASE LAYER HOTEL 清川までお願いします。",zh:"請載我去 BASE LAYER HOTEL。",rm:"BASE LAYER HOTEL Kiyokawa made onegai shimasu."},
+    {jp:"福岡空港までお願いします。",zh:"請載我去福岡機場。",rm:"Fukuoka kūkō made onegai shimasu."},
+    {jp:"ここで止めてください。",zh:"請在這裡停車。",rm:"Koko de tomete kudasai."},
+    {jp:"急いでいます。",zh:"我很趕時間。",rm:"Isoide imasu."},
+    {jp:"メーターでお願いします。",zh:"請用計費表計費。",rm:"Mētā de onegai shimasu."},
+    {jp:"領収書をください。",zh:"請給我收據。",rm:"Ryōshūsho o kudasai."},
+    {jp:"トランクに荷物を入れてください。",zh:"請幫我放行李進後車廂。",rm:"Toranku ni nimotsu o irete kudasai."},
+  ]},
+  {id:"pharm",icon:"💊",name:"藥局",phrases:[
+    {jp:"頭が痛いです。",zh:"我頭痛。",rm:"Atama ga itai desu."},
+    {jp:"お腹が痛いです。",zh:"我肚子痛。",rm:"Onaka ga itai desu."},
+    {jp:"熱があります。",zh:"我發燒了。",rm:"Netsu ga arimasu."},
+    {jp:"下痢をしています。",zh:"我拉肚子。",rm:"Geri o shite imasu."},
+    {jp:"吐き気がします。",zh:"我想吐。",rm:"Hakike ga shimasu."},
+    {jp:"この薬はありますか？",zh:"有這個藥嗎？",rm:"Kono kusuri wa arimasu ka?"},
+    {jp:"処方箋なしで買えますか？",zh:"沒有處方籤可以買嗎？",rm:"Shohōsen nashi de kaemasu ka?"},
+    {jp:"日本語の説明書はありますか？",zh:"有日文說明書嗎？",rm:"Nihongo no setsumeisho wa arimasu ka?"},
+  ]},
+  {id:"sos",icon:"🆘",name:"緊急",phrases:[
+    {jp:"助けてください！",zh:"救命！",rm:"Tasukete kudasai!"},
+    {jp:"救急車を呼んでください！",zh:"請叫救護車！",rm:"Kyūkyūsha o yonde kudasai!"},
+    {jp:"警察を呼んでください！",zh:"請叫警察！",rm:"Keisatsu o yonde kudasai!"},
+    {jp:"財布を盗まれました。",zh:"我的錢包被偷了。",rm:"Saifu o nusumaremashita."},
+    {jp:"パスポートをなくしました。",zh:"我的護照遺失了。",rm:"Pasupōto o nakushimashita."},
+    {jp:"日本語がわかりません。",zh:"我不懂日文。",rm:"Nihongo ga wakarimasen."},
+    {jp:"英語が話せる人はいますか？",zh:"有人會說英文嗎？",rm:"Eigo ga hanaseru hito wa imasu ka?"},
+    {jp:"大使館に連絡したいです。",zh:"我想聯絡大使館。",rm:"Taishikan ni renraku shitai desu."},
+  ]},
+  {id:"shop",icon:"🛍️",name:"購物",phrases:[
+    {jp:"これはいくらですか？",zh:"這個多少錢？",rm:"Kore wa ikura desu ka?"},
+    {jp:"試着してもいいですか？",zh:"我可以試穿嗎？",rm:"Shichaku shite mo ii desu ka?"},
+    {jp:"免税できますか？",zh:"可以退稅嗎？",rm:"Menzei dekimasu ka?"},
+    {jp:"カードで払えますか？",zh:"可以刷卡嗎？",rm:"Kādo de haraemasu ka?"},
+    {jp:"別々に包んでください。",zh:"請分開包裝（給不同人的禮物）。",rm:"Betsubetsu ni tsutsunde kudasai."},
+    {jp:"袋をください。",zh:"請給我袋子。",rm:"Fukuro o kudasai."},
+    {jp:"これを一つください。",zh:"請給我一個這個。",rm:"Kore o hitotsu kudasai."},
+    {jp:"在庫はありますか？",zh:"還有庫存嗎？",rm:"Zaiko wa arimasu ka?"},
+  ]},
+  {id:"onsen",icon:"♨️",name:"溫泉",phrases:[
+    {jp:"タオルはありますか？",zh:"有毛巾嗎？",rm:"Taoru wa arimasu ka?"},
+    {jp:"何時から何時まで入れますか？",zh:"幾點到幾點可以使用溫泉？",rm:"Nanji kara nanji made hairemasu ka?"},
+    {jp:"露天風呂はありますか？",zh:"有露天溫泉嗎？",rm:"Rotenburo wa arimasu ka?"},
+    {jp:"貴重品ロッカーはありますか？",zh:"有貴重物品置物箱嗎？",rm:"Kichōhin rokkā wa arimasu ka?"},
+    {jp:"石けんはどこですか？",zh:"肥皂在哪裡？",rm:"Sekken wa doko desu ka?"},
+    {jp:"混浴ですか？",zh:"是男女共浴嗎？",rm:"Konyoku desu ka?"},
+    {jp:"入れ墨があっても入れますか？",zh:"有紋身也可以進去嗎？",rm:"Irezumi ga atte mo hairemasu ka?"},
+    {jp:"気持ちいい！",zh:"好舒服！（泡完溫泉說）",rm:"Kimochi ii!"},
+  ]},
+  {id:"hotel",icon:"🏨",name:"住宿",phrases:[
+    {jp:"チェックインをお願いします。",zh:"我要辦理入住。",rm:"Chekkuin o onegai shimasu."},
+    {jp:"チェックアウトは何時ですか？",zh:"幾點退房？",rm:"Chekkuauto wa nanji desu ka?"},
+    {jp:"Wi-Fiのパスワードを教えてください。",zh:"請告訴我 Wi-Fi 密碼。",rm:"Waifai no pasuwādo o oshiete kudasai."},
+    {jp:"荷物を預かってもらえますか？",zh:"可以幫我保管行李嗎？",rm:"Nimotsu o azukatte moraemasu ka?"},
+    {jp:"タクシーを呼んでもらえますか？",zh:"可以幫我叫計程車嗎？",rm:"Takushī o yonde moraemasu ka?"},
+    {jp:"枕をもう一つください。",zh:"請再給我一個枕頭。",rm:"Makura o mō hitotsu kudasai."},
+    {jp:"部屋のカードが使えません。",zh:"房卡不能用了。",rm:"Heya no kādo ga tsukaemasen."},
+    {jp:"大きいスーツケースを明日空港に送りたいです。",zh:"我想明天把大行李箱送到機場（CARGO PASS）。",rm:"Ōkii sūtsukēsu o ashita kūkō ni okuritai desu."},
+  ]},
+];
+
 // ═══════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════
 let curDay=0;
+let curScn=0;
 let packSt={};
 function loadPack(){try{packSt=JSON.parse(localStorage.getItem('ky26_pack')||'{}')}catch(e){packSt={}}}
 function savePack(){localStorage.setItem('ky26_pack',JSON.stringify(packSt))}
@@ -426,7 +537,6 @@ function row(lbl,val,cls=''){return`<div class="tc-row"><div class="tc-lbl">${lb
 // RENDER: ITINERARY
 // ═══════════════════════════════════════════════
 function renderItin(){
-  // pills
   document.getElementById('day-bar').innerHTML=
     DAYS.map((d,i)=>`
       <div class="dp ${i===curDay?'on':''}" onclick="selDay(${i})">
@@ -605,9 +715,79 @@ function renderPack(){
 }
 
 // ═══════════════════════════════════════════════
+// RENDER: PHRASES
+// ═══════════════════════════════════════════════
+const hasTTS=('speechSynthesis' in window);
+
+function renderPhrases(){
+  // scenario pills
+  document.getElementById('scn-bar').innerHTML=
+    SCENARIOS.map((s,i)=>`
+      <div class="sp ${i===curScn?'on':''}" onclick="selScn(${i})">
+        ${s.icon} ${s.name}
+      </div>`).join('');
+
+  if(!hasTTS){
+    document.getElementById('tts-warn').style.display='block';
+  }
+
+  const scn=SCENARIOS[curScn];
+  const cards=scn.phrases.map((p,pi)=>`
+    <div class="ph-card">
+      <div class="ph-txt">
+        <div class="ph-jp">${p.jp}</div>
+        <div class="ph-zh">${p.zh}</div>
+        <div class="ph-rm">${p.rm}</div>
+      </div>
+      ${hasTTS?`<button class="ph-voice" id="vbtn-${curScn}-${pi}" onclick="speak(${JSON.stringify(p.jp)},this)" title="語音朗讀">🔊</button>`:''}
+    </div>`).join('');
+
+  document.getElementById('phrase-scroll').innerHTML=`
+    ${cards}
+    <div class="ph-tip">點擊 🔊 按鈕，手機會以日語發音朗讀給對方聽<br>建議音量調大，直接給對方看螢幕</div>
+    <div class="pad"></div>`;
+}
+
+// ═══════════════════════════════════════════════
+// TTS
+// ═══════════════════════════════════════════════
+let activBtn=null;
+
+function speak(text,btn){
+  if(!hasTTS) return;
+  // cancel any ongoing speech
+  window.speechSynthesis.cancel();
+  if(activBtn){activBtn.classList.remove('speaking');activBtn.textContent='🔊';}
+  if(activBtn===btn){activBtn=null;return;}
+
+  const utt=new SpeechSynthesisUtterance(text);
+  utt.lang='ja-JP';
+  utt.rate=0.85;
+  utt.pitch=1;
+
+  // pick a Japanese voice if available
+  const voices=window.speechSynthesis.getVoices();
+  const jaVoice=voices.find(v=>v.lang.startsWith('ja'));
+  if(jaVoice) utt.voice=jaVoice;
+
+  utt.onstart=()=>{btn.classList.add('speaking');btn.textContent='⏹️';activBtn=btn;};
+  utt.onend=()=>{btn.classList.remove('speaking');btn.textContent='🔊';activBtn=null;};
+  utt.onerror=()=>{btn.classList.remove('speaking');btn.textContent='🔊';activBtn=null;};
+
+  window.speechSynthesis.speak(utt);
+}
+
+// ensure voices are loaded (Chrome loads them async)
+if(hasTTS && window.speechSynthesis.onvoiceschanged!==undefined){
+  window.speechSynthesis.onvoiceschanged=()=>{};
+}
+
+// ═══════════════════════════════════════════════
 // INTERACTIONS
 // ═══════════════════════════════════════════════
 function sw(id){
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  if(activBtn){activBtn.classList.remove('speaking');activBtn.textContent='🔊';activBtn=null;}
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
   document.getElementById('t-'+id).classList.add('on');
@@ -617,8 +797,14 @@ function selDay(i){
   curDay=i;
   renderItin();
   document.getElementById('day-scroll').scrollTop=0;
-  // scroll pill into view
   const pills=document.querySelectorAll('.dp');
+  if(pills[i]) pills[i].scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+}
+function selScn(i){
+  curScn=i;
+  renderPhrases();
+  document.getElementById('phrase-scroll').scrollTop=0;
+  const pills=document.querySelectorAll('.sp');
   if(pills[i]) pills[i].scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
 }
 function tgPack(item){
@@ -634,6 +820,7 @@ renderItin();
 renderTrans();
 renderHotels();
 renderPack();
+renderPhrases();
 </script>
 </body>
 </html>
