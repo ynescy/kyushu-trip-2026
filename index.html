@@ -521,10 +521,10 @@ const REST_LIST=[
 ];
 
 const FLIGHTS=[
-  {r:"KUL → TPE",code:"JX726",dt:"5/11（一）",dep:"17:20 KUL T1",arr:"22:15 TPE T2",ac:"A321NEO",bag:"2PC / 人（已含票價）"},
-  {r:"TPE → FUK",code:"JX840",dt:"5/12（二）",dep:"09:35 TPE T1",arr:"13:05 FUK 國際航廈",ac:"A330-900NEO",bag:"2PC / 人（已含票價）",w:"注意是 T1！"},
-  {r:"FUK → TPE",code:"JX1841",dt:"5/19（二）",dep:"16:00 FUK 國際航廈",arr:"17:30 TPE T1",ac:"A321NEO",bag:"2PC / 人（已含票價）"},
-  {r:"TPE → KUL",code:"JX725",dt:"5/20（三）",dep:"11:15 TPE T2",arr:"16:10 KUL T1",ac:"A321NEO",bag:"2PC / 人（已含票價）",w:"Ynes 留台，7/1 返馬"},
+  {r:"KUL → TPE",code:"JX726",dt:"5/11（一）",dep:"17:20 KUL T1",arr:"22:15 TPE T2",ac:"A321NEO",dur:"4h 55m",bag:"託運 23kg × 1 件 ｜ 手提 7kg"},
+  {r:"TPE → FUK",code:"JX840",dt:"5/12（二）",dep:"09:35 TPE T1",arr:"13:05 FUK 國際航廈",ac:"A330-900NEO",dur:"3h 30m",bag:"託運 23kg × 1 件 ｜ 手提 7kg",w:"注意是 T1！"},
+  {r:"FUK → TPE",code:"JX1841",dt:"5/19（二）",dep:"16:00 FUK 國際航廈",arr:"17:30 TPE T1",ac:"A321NEO",dur:"1h 30m",bag:"託運 23kg × 2 件 ｜ 手提 7kg"},
+  {r:"TPE → KUL",code:"JX725",dt:"5/20（三）",dep:"11:15 TPE T2",arr:"16:10 KUL T1",ac:"A321NEO",dur:"4h 55m",bag:"託運 23kg × 2 件 ｜ 手提 7kg",w:"Ynes 留台，7/1 返馬"},
 ];
 const BKS=[];
 const BUSES=[];
@@ -735,7 +735,8 @@ function renderTrans(){
         <div class="tc-ti"><div class="tc-name">${f.code} · ${f.r}</div><div class="tc-sub">${f.dt}</div></div>
       </div>
       <div class="tc-body">
-        ${row('起飛',f.dep)}${row('抵達',f.arr)}${row('機型',f.ac)}
+        ${row('起飛',f.dep)}${row('抵達',f.arr)}
+        ${row('飛行時間',f.dur)}${row('機型',f.ac)}
         ${f.bag?row('行李額度',f.bag):''}
         ${f.w?row('注意',f.w,'red'):''}
       </div>
