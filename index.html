@@ -934,15 +934,15 @@ function tgPack(item){
 // FIREBASE 多人同步設定
 // 在 Firebase Console 建立 Realtime Database 後填入，留 null 則用本機 localStorage
 // ═══════════════════════════════════════════════
-const FIREBASE_CFG = null;
-/* ▼ 解除注釋並填入你的 Firebase 設定即可啟用雲端同步 ▼
 const FIREBASE_CFG = {
-  apiKey: "AIza…貼上你的 apiKey",
-  databaseURL: "https://你的專案-default-rtdb.firebaseio.com",
-  projectId: "你的專案 ID",
-  appId: "1:…貼上你的 appId",
+  apiKey: "AIzaSyDZjqoa-3dFgxdlm95qlySi44nvDUFt9As",
+  authDomain: "fukuoka-family-travel.firebaseapp.com",
+  databaseURL: "https://fukuoka-family-travel-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "fukuoka-family-travel",
+  storageBucket: "fukuoka-family-travel.firebasestorage.app",
+  messagingSenderId: "40690956783",
+  appId: "1:40690956783:web:75a7d91f31c6ab8acfde1a",
 };
-*/
 
 let _fbDb = null;
 let _splitCache = [];
