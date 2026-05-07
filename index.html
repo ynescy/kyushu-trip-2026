@@ -279,7 +279,12 @@ html,body{height:100%;background:var(--bg);color:var(--txt);
 .sub-btn:disabled{opacity:.45;cursor:not-allowed}
 .cfg-note{font-size:11px;color:var(--txt3);margin-top:4px;line-height:1.6}
 .sel-all{color:var(--pri);cursor:pointer;font-weight:600;font-size:11px;text-decoration:underline}
+.sync-badge{font-size:10px;background:var(--grn);color:#fff;padding:2px 7px;border-radius:10px;margin-left:6px;font-weight:700;vertical-align:middle}
+.sync-off{background:var(--txt3)}
 </style>
+<!-- Firebase Realtime DB SDK（選用，多人同步用） -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
 <div id="app">
@@ -385,7 +390,7 @@ const DAYS=[
     {t:"06:30",i:"🥐",n:"桃園機場早餐",d:"航廈美食街或超商"},
     {t:"09:35",i:"✈️",n:"JX840 起飛",d:"TPE T1 → 福岡 · A330-900NEO",note:"⚠️ 注意是 T1！"},
     {t:"13:05",i:"🛬",n:"福岡國際航廈落地",d:"辦入境手續"},
-    {t:"14:30",i:"🚗",n:"ハコレンタカー 取車",d:"福岡空港 国際線出口 · 預約號 HK-2605060020 · 道深領車",m:"ハコレンタカー 福岡空港",alert:true,note:"⚠️ 道深必帶國際駕照正本！"},
+    {t:"14:30",i:"🚗",n:"ハコレンタカー 取車",d:"福岡空港 国際線出口 · 道深領車",m:"ハコレンタカー 福岡空港",alert:true,note:"⚠️ 道深必帶國際駕照正本！"},
     {t:"15:00",i:"🚗",n:"自駕出發 → 別府",d:"車程約 2 小時 · TOYOTA Alphard",m:"別府 大分県"},
     {t:"17:00",i:"🏨",n:"AMANEK Beppu Check-in",d:"別府市駅前本町 6-35 · 15:00 後 check-in",m:"AMANEK Beppu YULA-RE"},
     {t:"18:00",i:"🍣",n:"晚餐：水天壽司",d:"17:00–21:30 · 別府在地壽司老舖",m:"水天寿司 別府"},
@@ -429,7 +434,7 @@ const DAYS=[
     {t:"11:00",i:"🚗",n:"自駕 別府 → 福岡",d:"車程約 2 小時 · TOYOTA Alphard"},
     {t:"13:30",i:"🥐",n:"博多車站午餐",d:"博多デイトス美食街 · 三日月可頌現吃 · 備案：西新初喜涮涮鍋",m:"博多デイトス"},
     {t:"15:00",i:"🏨",n:"BASE LAYER HOTEL Check-in",d:"1-14-15 Kiyokawa, Chuo Ward · 15:00 後",m:"BASE LAYER HOTEL FUKUOKA"},
-    {t:"16:00",i:"🚗",n:"還車 — 福岡空港 ハコレンタカー",d:"福岡市博多区西月隈2-10 · 道深駕車還車",m:"ハコレンタカー 福岡空港",note:"⚠️ 預約號 HK-2605060020"},
+    {t:"16:00",i:"🚗",n:"還車 — 福岡空港 ハコレンタカー",d:"福岡市博多区西月隈2-10 · 道深駕車還車",m:"ハコレンタカー 福岡空港"},
     {t:"17:00",i:"🤖",n:"LaLaport / 高達（Ewin）",d:"飯店鄰近",m:"ららぽーと福岡"},
     {t:"18:30",i:"🦀",n:"晚餐：博多甲羅本店",d:"螃蟹料理 · ¥5,000–8,000/人 · 建議預約",m:"博多甲羅本店"},
     {t:"21:00",i:"🏮",n:"中洲屋台",d:"居酒屋 / 關東煮 · ¥1,500–2,000",m:"中洲屋台 福岡"},
@@ -520,13 +525,10 @@ const FLIGHTS=[
   {r:"FUK → TPE",code:"JX1841",dt:"5/19（二）",dep:"16:00 FUK 國際航廈",arr:"17:30 TPE T1",ac:"A321NEO"},
   {r:"TPE → KUL",code:"JX725",dt:"5/20（三）",dep:"11:15 TPE T2",arr:"16:10 KUL T1",ac:"A321NEO",w:"Ynes 留台，7/1 返馬"},
 ];
-const BKS=[
-  {ppl:"三姨 / 二姨 / 道深 / 小姨",code:"EXBFTQ",bag:"2PC × 4"},
-  {ppl:"Ynes",code:"FDB3XH",bag:"2PC × 1"},
-];
+const BKS=[];
 const BUSES=[];
 const CAR={
-  co:"ハコレンタカー 福岡",bk:"HK-2605060020",
+  co:"ハコレンタカー 福岡",
   ve:"TOYOTA Alphard SCパッケージ（6人座）",dr:"道深",
   ph:"092-260-9506",
   pu:"2026/5/12（二）14:30 福岡空港 国際線",
@@ -540,11 +542,11 @@ const HOTELS=[
    ad:"桃園國際機場附近",bk:"—",ph:"—",nt:"宵夜：超商 7-Eleven / FamilyMart",
    pay:"已付",warn:false,m:"機場背包客 桃園機場"},
   {n:"AMANEK Beppu YULA-RE",loc:"日本 別府",ci:"5/12（二）15:00",co:"5/16（六）11:00",nights:"4晚",
-   ad:"大分縣別府市駅前本町 6-35",bk:"Booking.com #6035966305",ph:"0977-21-1122",
+   ad:"大分縣別府市駅前本町 6-35",bk:"—",ph:"0977-21-1122",
    nt:"自家溫泉浴池 · 不可退訂",pay:"已付",warn:false,m:"AMANEK Beppu YULA-RE"},
   {n:"BASE LAYER HOTEL FUKUOKA",loc:"日本 福岡",ci:"5/16（六）15:00",co:"5/19（二）10:00",nights:"3晚",
    ad:"1-14-15 Kiyokawa, Chuo Ward, Fukuoka",
-   bk:"女 #1359044298456359\n男 #1359044298400723",ph:"+81-924061256",
+   bk:"—",ph:"+81-924061256",
    nt:"女生房 Comfort 4人 · 男生房 Sauna Twin 2人 · 不可退",
    pay:"現場付款",warn:false,
    m:"BASE LAYER HOTEL FUKUOKA 清川"},
@@ -573,7 +575,7 @@ const PACK={
     "護照（效期 6 個月以上）",
     "機票訂位確認截圖",
     "住宿訂位確認截圖",
-    "ハコレンタカー 截圖 HK-2605060020",
+    "ハコレンタカー 取車截圖",
     "道深：國際駕照正本（⚠️ 沒有無法取車！）",
     "旅遊保險證明",
   ],
@@ -736,13 +738,6 @@ function renderTrans(){
       </div>
     </div>`).join('');
 
-  const bkInfo=BKS.map(b=>`
-    <div class="bk-row">
-      <div class="bk-ppl">${b.ppl}</div>
-      <div class="bk-code">${b.code}</div>
-      <div class="bk-bag">${b.bag}</div>
-    </div>`).join('');
-
   const cityRows=[
     ['地鐵（七隈線/空港線）','¥210 起'],
     ['西鐵電車 天神↔太宰府','¥430/人（單程）'],
@@ -753,12 +748,6 @@ function renderTrans(){
   document.getElementById('t-trans').innerHTML=`
     <div class="sec-lbl">✈️ 航班</div>
     ${fCards}
-    <div class="sec-lbl">🎫 訂位代號</div>
-    <div class="tc" style="margin:0 16px 12px">
-      <div class="tc-body" style="padding-top:12px">${bkInfo}
-        <div style="padding-top:8px;font-size:12px;color:var(--txt2)">每人託運行李 2PC（已含票價）</div>
-      </div>
-    </div>
     <div class="sec-lbl">🚗 租車</div>
     <div class="tc">
       <div class="tc-hdr amber">
@@ -766,7 +755,7 @@ function renderTrans(){
         <div class="tc-ti"><div class="tc-name">${CAR.co}</div><div class="tc-sub">5/12 取車 · 5/16 還車</div></div>
       </div>
       <div class="tc-body">
-        ${row('預約號',CAR.bk,'mono')}${row('車型',CAR.ve)}
+        ${row('車型',CAR.ve)}
         ${row('駕駛',CAR.dr)}${row('電話',CAR.ph)}
         ${row('取車',CAR.pu)}${row('地址',CAR.ad)}
         ${row('還車',CAR.re)}${row('費用',CAR.fee)}
@@ -942,10 +931,45 @@ function tgPack(item){
 }
 
 // ═══════════════════════════════════════════════
+// FIREBASE 多人同步設定
+// 在 Firebase Console 建立 Realtime Database 後填入，留 null 則用本機 localStorage
+// ═══════════════════════════════════════════════
+const FIREBASE_CFG = null;
+/* ▼ 解除注釋並填入你的 Firebase 設定即可啟用雲端同步 ▼
+const FIREBASE_CFG = {
+  apiKey: "AIza…貼上你的 apiKey",
+  databaseURL: "https://你的專案-default-rtdb.firebaseio.com",
+  projectId: "你的專案 ID",
+  appId: "1:…貼上你的 appId",
+};
+*/
+
+let _fbDb = null;
+let _splitCache = [];
+
+function initFirebase(){
+  if(!FIREBASE_CFG) return;
+  try{
+    const app = firebase.initializeApp(FIREBASE_CFG, 'ky26');
+    _fbDb = firebase.database(app);
+    _fbDb.ref('expenses').on('value', snap=>{
+      _splitCache = snap.val() || [];
+      renderSplit();
+    });
+  }catch(e){ console.error('Firebase 初始化失敗', e); }
+}
+
+// ═══════════════════════════════════════════════
 // SPLIT — 分帳模組
 // ═══════════════════════════════════════════════
-function getSplitData(){try{return JSON.parse(localStorage.getItem('kyushu_split')||'[]');}catch{return[];}}
-function saveSplitData(d){localStorage.setItem('kyushu_split',JSON.stringify(d));}
+function getSplitData(){
+  if(_fbDb) return _splitCache;
+  try{return JSON.parse(localStorage.getItem('kyushu_split')||'[]');}catch{return[];}
+}
+function saveSplitData(d){
+  if(_fbDb){ _splitCache=d; _fbDb.ref('expenses').set(d); return; }
+  localStorage.setItem('kyushu_split',JSON.stringify(d));
+}
 function getSplitCfg(){try{return JSON.parse(localStorage.getItem('kyushu_cfg')||'{}');}catch{return {};}}
 function saveSplitCfg(c){localStorage.setItem('kyushu_cfg',JSON.stringify(c));}
 
@@ -1012,9 +1036,12 @@ function renderSplit(){
     <button class="share-btn" onclick="shareSummary()">📤 複製結算清單 · 傳 WhatsApp</button>`;
   }
 
+  const syncBadge=_fbDb
+    ?'<span class="sync-badge">☁️ 雲端同步</span>'
+    :'<span class="sync-badge sync-off">📱 本機</span>';
   document.getElementById('t-split').innerHTML=`
     <div class="split-hdr">
-      <div class="split-ttl">💰 旅遊分帳</div>
+      <div class="split-ttl">💰 旅遊分帳${syncBadge}</div>
       <button class="gear-btn" onclick="openCfg()">⚙️</button>
     </div>
     <div class="mem-cards">${mcHTML}</div>
@@ -1226,6 +1253,7 @@ function saveCfg(){
 // ═══════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════
+initFirebase();
 renderItin();
 renderTrans();
 renderHotels();
