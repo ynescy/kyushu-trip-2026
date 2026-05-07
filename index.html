@@ -381,15 +381,16 @@ const DAYS=[
    items:[
     {t:"15:00",i:"🛂",n:"前往 KUL T1 辦理登機",d:"建議 15:00 前抵達"},
     {t:"17:20",i:"✈️",n:"JX726 起飛",d:"KUL T1 → TPE T2 · A321NEO · 飛機餐"},
-    {t:"22:15",i:"🛬",n:"桃園 T2 落地",d:"入境辦理，過海關"},
+    {t:"22:15",i:"🛬",n:"桃園 T2 落地",d:"入境辦理，過海關",note:"靜宜：行李可暫存海關"},
     {t:"23:00",i:"🏨",n:"機場背包客 Check-in",d:"宵夜：超商 7-Eleven / FamilyMart"},
   ]},
   {date:"5/12",wd:"二",lbl:"台灣→別府",wx:"☀️ 23°C",hi:"抵達日本！取車自駕到別府",cost:"¥1,000–2,000",
    items:[
-    {t:"06:00",i:"🏨",n:"機場背包客 Check-out",d:"輕裝前往機場"},
-    {t:"06:30",i:"🥐",n:"桃園機場早餐",d:"航廈美食街或超商"},
+    {t:"06:30",i:"🏨",n:"機場背包客 Check-out",d:"輕裝前往機場"},
+    {t:"06:40",i:"🥐",n:"桃園機場早餐",d:"航廈美食街或超商"},
+    {t:"08:00",i:"📦",n:"黑貓宅急便 寄行李",d:"機場宅急便服務台 · 部分行李寄往別府飯店"},
     {t:"09:35",i:"✈️",n:"JX840 起飛",d:"TPE T1 → 福岡 · A330-900NEO",note:"⚠️ 注意是 T1！"},
-    {t:"13:05",i:"🛬",n:"福岡國際航廈落地",d:"辦入境手續"},
+    {t:"13:05",i:"🛬",n:"福岡國際航廈落地",d:"辦入境手續",note:"⚠️ 落地後致電 092-260-9506，接駁車來國際線出口接車"},
     {t:"14:30",i:"🚗",n:"ハコレンタカー 取車",d:"福岡空港 国際線出口 · 道深領車",m:"ハコレンタカー 福岡空港",alert:true,note:"⚠️ 道深必帶國際駕照正本！"},
     {t:"15:00",i:"🚗",n:"自駕出發 → 別府",d:"車程約 2 小時 · TOYOTA Alphard",m:"別府 大分県"},
     {t:"17:00",i:"🏨",n:"AMANEK Beppu Check-in",d:"別府市駅前本町 6-35 · 15:00 後 check-in",m:"AMANEK Beppu YULA-RE"},
@@ -520,10 +521,10 @@ const REST_LIST=[
 ];
 
 const FLIGHTS=[
-  {r:"KUL → TPE",code:"JX726",dt:"5/11（一）",dep:"17:20 KUL T1",arr:"22:15 TPE T2",ac:"A321NEO"},
-  {r:"TPE → FUK",code:"JX840",dt:"5/12（二）",dep:"09:35 TPE T1",arr:"13:05 FUK 國際航廈",ac:"A330-900NEO",w:"注意是 T1！"},
-  {r:"FUK → TPE",code:"JX1841",dt:"5/19（二）",dep:"16:00 FUK 國際航廈",arr:"17:30 TPE T1",ac:"A321NEO"},
-  {r:"TPE → KUL",code:"JX725",dt:"5/20（三）",dep:"11:15 TPE T2",arr:"16:10 KUL T1",ac:"A321NEO",w:"Ynes 留台，7/1 返馬"},
+  {r:"KUL → TPE",code:"JX726",dt:"5/11（一）",dep:"17:20 KUL T1",arr:"22:15 TPE T2",ac:"A321NEO",bag:"2PC / 人（已含票價）"},
+  {r:"TPE → FUK",code:"JX840",dt:"5/12（二）",dep:"09:35 TPE T1",arr:"13:05 FUK 國際航廈",ac:"A330-900NEO",bag:"2PC / 人（已含票價）",w:"注意是 T1！"},
+  {r:"FUK → TPE",code:"JX1841",dt:"5/19（二）",dep:"16:00 FUK 國際航廈",arr:"17:30 TPE T1",ac:"A321NEO",bag:"2PC / 人（已含票價）"},
+  {r:"TPE → KUL",code:"JX725",dt:"5/20（三）",dep:"11:15 TPE T2",arr:"16:10 KUL T1",ac:"A321NEO",bag:"2PC / 人（已含票價）",w:"Ynes 留台，7/1 返馬"},
 ];
 const BKS=[];
 const BUSES=[];
@@ -535,10 +536,12 @@ const CAR={
   ad:"福岡市博多区西月隈2-10",
   re:"2026/5/16（六）16:00 福岡空港 国際線",
   fee:"¥67,850（已付）",
+  pickup:"落地後致電 092-260-9506，接駁車至國際線出口接客",
+  ins:"⚠️ 取車時購買 0 Excess 全險",
   warn:"道深 取車當日必須攜帶國際駕照正本，否則無法取車！",
 };
 const HOTELS=[
-  {n:"機場背包客",loc:"台灣 桃園機場",ci:"5/11（一）深夜",co:"5/12（二）06:00",nights:"1晚",
+  {n:"機場背包客",loc:"台灣 桃園機場",ci:"5/11（一）深夜",co:"5/12（二）06:30",nights:"1晚",
    ad:"桃園國際機場附近",bk:"—",ph:"—",nt:"宵夜：超商 7-Eleven / FamilyMart",
    pay:"已付",warn:false,m:"機場背包客 桃園機場"},
   {n:"AMANEK Beppu YULA-RE",loc:"日本 別府",ci:"5/12（二）15:00",co:"5/16（六）11:00",nights:"4晚",
@@ -556,17 +559,16 @@ const HOTELS=[
 ];
 const PACK={
   "👗 衣物":[
-    "薄外套 × 2（早晚別府/阿蘇較涼）",
+    "Jacket × 1（早晚較涼）",
     "透氣 T-Shirt × 3–4（速乾）",
     "長褲 × 2",
     "短褲 × 1",
     "舒適步行鞋",
     "夾腳拖 / 輕便拖鞋（溫泉）",
-    "折疊傘 / 輕便雨衣（5/18 有雨！）",
-    "防曬帽（阿蘇/草千裡）",
+    "舊薄毛巾（溫泉後可直接丟棄）",
   ],
   "🧴 盥洗":[
-    "基本洗漱用品",
+    "基本洗漱用品（牙刷・牙膏・洗髮乳・沐浴乳 飯店均有備）",
     "防曬乳 SPF 50+",
     "保濕乳液（溫泉後皮膚乾）",
     "個人藥品（止痛/暈車/腸胃）",
@@ -734,6 +736,7 @@ function renderTrans(){
       </div>
       <div class="tc-body">
         ${row('起飛',f.dep)}${row('抵達',f.arr)}${row('機型',f.ac)}
+        ${f.bag?row('行李額度',f.bag):''}
         ${f.w?row('注意',f.w,'red'):''}
       </div>
     </div>`).join('');
@@ -759,6 +762,7 @@ function renderTrans(){
         ${row('駕駛',CAR.dr)}${row('電話',CAR.ph)}
         ${row('取車',CAR.pu)}${row('地址',CAR.ad)}
         ${row('還車',CAR.re)}${row('費用',CAR.fee)}
+        ${row('接送',CAR.pickup)}${row('保險',CAR.ins,'red')}
       </div>
       <div class="warn-box">⚠️ ${CAR.warn}</div>
     </div>
