@@ -284,7 +284,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);
 .sync-off{background:var(--txt3)}
 
 /* ── Shopping ── */
-.shop-area{background:var(--card);border-radius:var(--r);margin:0 16px 12px;box-shadow:var(--shd);overflow:hidden}
+.shop-area{background:var(--card);border-radius:var(--r);margin:0 16px 12px;box-shadow:var(--shd);overflow:hidden;flex-shrink:0}
 .shop-area-hdr{padding:12px 14px;display:flex;align-items:center;gap:10px}
 .shop-area-hdr.rose{background:linear-gradient(135deg,#8B3A5C,#C4617A)}
 .shop-area-hdr.navy{background:linear-gradient(135deg,#283593,#3949AB)}
@@ -301,7 +301,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);
 .shop-item-name{font-size:13px;font-weight:600;color:var(--txt);margin-bottom:3px;display:flex;align-items:center;gap:6px}
 .shop-item-desc{font-size:12px;color:var(--txt2);line-height:1.5}
 .shop-item-tag{display:inline-block;font-size:10px;background:rgba(193,127,74,.12);color:var(--pri);padding:1px 7px;border-radius:10px;font-weight:700;flex-shrink:0}
-.shop-tip-box{margin:0 16px 12px;padding:10px 14px;border-radius:12px;font-size:12px;line-height:1.8}
+.shop-tip-box{margin:0 16px 12px;padding:10px 14px;border-radius:12px;font-size:12px;line-height:1.8;flex-shrink:0}
 .shop-tip-box.yellow{background:rgba(255,193,7,.1);border-left:3px solid #FFC107;color:#7B6000;font-weight:600}
 .shop-tip-box.green{background:var(--grn-lt);border-left:3px solid var(--grn);color:var(--grn);font-weight:600}
 .shop-tip-box.blue{background:rgba(57,73,171,.08);border-left:3px solid #3949AB;color:#283593;font-weight:600}
@@ -624,22 +624,22 @@ const PACK={
 // ── 購物資料 ──
 const SHOP_AREAS=[
   {color:'rose',ico:'🏬',name:'天神商圈',sub:'福岡市中心・地下街直通',shops:[
-    {ico:'🛒',name:'Solaria Plaza',tag:'靜宜點名',desc:'天神核心商場，B1–8F',m:'Solaria Plaza 天神 福岡'},
+    {ico:'🛒',name:'Solaria Plaza',tag:'靜宜點名',desc:'靜宜特別點名的天神核心商場',m:'Solaria Plaza 天神 福岡'},
     {ico:'🏪',name:'Mina 天神',tag:'',desc:'GU・UNIQLO・DAISO・3COINS・LOFT・AEON・MUJI 全進駐',m:'Mina天神 福岡'},
-    {ico:'🌧️',name:'天神地下街',tag:'雨天備案',desc:'全長590m 地下商店街，直連各主要百貨',m:'天神地下街 福岡'},
-    {ico:'🍱',name:'大丸・三越・岩田屋',tag:'B2美食/退稅',desc:'地下2F美食街 & 伴手禮 · 岩田屋新館7F辦95折卡（三越同店共用）· B2 退稅',m:'岩田屋本店 天神 福岡'},
+    {ico:'🌧️',name:'天神地下街',tag:'雨天備案',desc:'全長590m 地下商店街，雨天最佳選擇，直連大丸・三越・岩田屋・天神地鐵站',m:'天神地下街 福岡'},
+    {ico:'🍱',name:'大丸・三越＋岩田屋 B2',tag:'B2退稅',desc:'地下2F美食街 & 伴手禮 · 岩田屋新館7F辦95折卡，三越同卡共用 · B2辦理退稅',m:'岩田屋本店 天神 福岡'},
   ]},
   {color:'navy',ico:'🎒',name:'博多商圈',sub:'吃飯＋伴手禮一次搞定',shops:[
-    {ico:'📷',name:'友都八喜博多',tag:'',desc:'電器・玩具・相機・DAISO；樓上有 Lopia 超市，超值掃貨',m:'ヤマダデンキ LABI1博多 福岡'},
-    {ico:'👜',name:'博多阪急 B2 伴手禮',tag:'M3退稅',desc:'連 AMU Plaza（3F 美妝）・退稅護膚品・包包',m:'博多阪急 福岡'},
+    {ico:'📷',name:'友都八喜博多',tag:'',desc:'電器・玩具・相機・DAISO 齊全；樓上有 Lopia 超市，食材超值掃貨',m:'ヤマダデンキ LABI1博多 福岡'},
+    {ico:'👜',name:'博多阪急 B2 伴手禮',tag:'M3退稅',desc:'連 AMU Plaza（3F 美妝）・M3 辦退稅（護膚品・包包）',m:'博多阪急 福岡'},
   ]},
   {color:'forest',ico:'🌊',name:'博多運河城',sub:'Canal City Hakata',shops:[
-    {ico:'💧',name:'水舞表演',tag:'每30分一場',desc:'晚上 9pm 場最特別（燈光秀）・戶外廣場・免費觀賞',m:'キャナルシティ博多 水舞台 福岡'},
+    {ico:'💧',name:'水舞表演',tag:'每30分一場',desc:'每半小時一次 · 晚上 9pm 場最特別（有燈光秀）· 戶外廣場 · 免費觀賞 · 附近有戶外用品店',m:'キャナルシティ博多 水舞台 福岡'},
     {ico:'👟',name:'Alpen FUKUOKA',tag:'',desc:'2F 球鞋區，品牌齊全',m:'Alpen アウトドアーズ キャナルシティ'},
   ]},
   {color:'amber',ico:'🏢',name:'Lalaport 福岡',sub:'高達立像・新型商場',shops:[
     {ico:'👟',name:'2F New Balance',tag:'3D量腳',desc:'3D 儀器測出最合腳的鞋款，體驗必試',m:'ニューバランス ららぽーと福岡'},
-    {ico:'🍜',name:'3F 清陽軒（久留米拉麵）',tag:'排隊名店',desc:'豚骨拉麵發源地久留米的排隊名店',m:'清陽軒 ららぽーと福岡'},
+    {ico:'🍜',name:'3F 清陽軒（久留米拉麵）',tag:'排隊名店',desc:'久留米是豚骨拉麵發源地，清陽軒是當地排隊名店',m:'清陽軒 ららぽーと福岡'},
   ]},
 ];
 
